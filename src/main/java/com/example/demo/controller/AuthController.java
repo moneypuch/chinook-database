@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.AuthenticationRequest;
 import com.example.demo.dto.AuthenticationResponse;
+import com.example.demo.model.ChangePasswordRequest;
 import com.example.demo.model.RefreshTokenRequest;
 import com.example.demo.service.LoggingService;
 import com.example.demo.service.PasswordService;
@@ -12,7 +13,6 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -21,7 +21,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 
@@ -106,12 +109,18 @@ public class AuthController {
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/change-password")
     public ResponseEntity<?> changePassword(
-            @Parameter(description = "New password", required = true) @RequestParam String newPassword,
+            @Parameter(description = "Password change request body", required = true) @RequestBody ChangePasswordRequest changePasswordRequest,
             Principal principal) {
 
         String username = principal.getName();
+        String oldPassword = changePasswordRequest.getOldPassword();
+        String newPassword = changePasswordRequest.getNewPassword();
 
         try {
+            // Authenticate the old password
+            authenticate(username, oldPassword);
+
+            // Change the password to the new one
             boolean success = passwordService.changePassword(username, newPassword);
             if (!success) {
                 return ResponseEntity.badRequest().body("Password does not meet criteria or matches recent passwords.");
