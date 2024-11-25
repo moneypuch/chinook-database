@@ -1,6 +1,34 @@
-This project is a Spring Boot application that provides a RESTful API. It uses Jakarta EE with `jakarta` imports, Spring Data JPA, Spring MVC, and Lombok.
+## Overview
+
+This project sets up a backend, frontend, and MySQL database using Docker Compose. The application uses Spring Boot for the backend and can dynamically switch configurations based on the active Spring profile.
 
 ## Prerequisites
+
+- Docker
+- Docker Compose
+
+## Quick Start
+
+To run the application, simply use the following command:
+
+```bash
+docker-compose up --build
+```
+
+This command will build and start all the necessary services defined in the `docker-compose.yml` file.
+
+### Services and Ports
+
+- **Backend** (Spring Boot): Accessible at [http://localhost:8080](http://localhost:8080)
+- **Frontend**: Accessible at [http://localhost:3000](http://localhost:3000)
+- **MySQL Database**: Accessible at `localhost:3306`
+
+### Configuration
+
+The backend service uses a profile-specific configuration file `application-docker.properties` to connect to the MySQL database running in the Docker container. The relevant section in your `docker-compose.yml` ensures the correct Spring profile (`docker`) is active during startup.
+
+
+## Development Prerequisites
 
 - Java SDK 17
 - Maven 3.6.0 or later
